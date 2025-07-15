@@ -1,11 +1,7 @@
 package com.rabiteach.rento.ui.nav
 
 
-enum class UserRole {
-    LANDLORD,
-    ASSISTANT,
-    TENANT
-}
+
 
 
 
