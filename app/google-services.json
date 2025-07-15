@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1073225135527",
+    "project_id": "rento-b7264",
+    "storage_bucket": "rento-b7264.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1073225135527:android:f1a2379c36b76948623282",
+        "android_client_info": {
+          "package_name": "com.rabiteach.rento"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDgk_MIpLv--aignTxh5re5r0zIffQ9ius"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
