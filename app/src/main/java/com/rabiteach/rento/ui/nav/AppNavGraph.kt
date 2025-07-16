@@ -8,10 +8,15 @@ import com.rabiteach.rento.ui.screens.TenantHomeScreen
 
 import android.content.Context
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.rabiteach.rento.model.Tenant
+import com.rabiteach.rento.ui.screens.manager.TenantDetailScreen
+import com.rabiteach.rento.viewModels.TenantViewModel
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -26,6 +31,8 @@ fun AppNavGraph(
     context: Context,
     onRoleUpdated:(UserRole)->Unit
 ) {
+    val viewModel: TenantViewModel = viewModel()
+
     NavHost(navController, startDestination = startDestination) {
         composable(Screen.AccessCode.route) {
             AccessCodeScreen { detectedRole ->
@@ -54,6 +61,10 @@ fun AppNavGraph(
 
         composable(Screen.ManagerHome.route) {
             ManagerHomeScreen(role = role ?: UserRole.ASSISTANT,
+                onTenantClick = { tenant ->
+                    navController.navigate(Screen.TenantDetail.createRoute(tenant.passcode)) // unique ID
+                },
+                viewModel=viewModel,
                 onLogout = {
                 CoroutineScope(Dispatchers.IO).launch {
                     AppPreferences.clearUserData(context)
@@ -64,6 +75,13 @@ fun AppNavGraph(
                     }
                 }
             })
+        }
+        composable(
+            route = Screen.TenantDetail.route,
+            arguments = listOf(navArgument("tenantId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val tenantId = backStackEntry.arguments?.getString("tenantId") ?: return@composable
+            TenantDetailScreen(viewModel, tenantId, navController)
         }
     }
 }

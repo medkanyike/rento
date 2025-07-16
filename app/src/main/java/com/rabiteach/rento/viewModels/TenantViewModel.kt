@@ -1,5 +1,9 @@
 package com.rabiteach.rento.viewModels
 
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.Firebase
@@ -22,15 +26,57 @@ class TenantViewModel : ViewModel() {
     private val _tenants = MutableStateFlow<List<Tenant>>(emptyList())
     val tenants: StateFlow<List<Tenant>> = _tenants.asStateFlow()
 
+    var filteredTenants = mutableStateListOf<Tenant>()
+        private set
+
+    private var currentSortOrder = SortOrder.ASCENDING
+    private val _page = mutableIntStateOf(1)
+    private val _pageSize = 10
+
+    val pagedTenants: List<Tenant>
+        get() = filteredTenants.take(_page.intValue * _pageSize)
+
+    fun loadMore() {
+        _page.intValue += 1
+    }
+
+
     init {
         fetchTenants()
     }
+
 
     fun fetchTenants() {
         tenantsRef.get().addOnSuccessListener { result ->
             val list = result.mapNotNull { it.toObject(Tenant::class.java) }
             _tenants.value = list
+            filteredTenants.clear()
+            filteredTenants.addAll(list)
         }
+    }
+
+    fun filterTenants(query: String) {
+        val lower = query.trim().lowercase()
+        filteredTenants.clear()
+        filteredTenants.addAll(
+            _tenants.value.filter {
+                it.location.lowercase().contains(lower) || it.houseNumber.lowercase().contains(lower)
+            }
+        )
+    }
+
+    fun showOverdueOnly() {
+        filteredTenants.clear()
+        filteredTenants.addAll(
+            _tenants.value.filter {
+                it.nextPaymentDate!!.toDate().before(Date())
+            }
+        )
+    }
+
+    fun clearFilter() {
+        filteredTenants.clear()
+        filteredTenants.addAll(_tenants.value)
     }
 
     suspend fun isPasscodeUnique(passcode: String): Boolean {
@@ -95,14 +141,26 @@ class TenantViewModel : ViewModel() {
         }
     }
 
-    fun filterByLocation(location: String): List<Tenant> =
-        tenants.value.filter { it.location.equals(location, ignoreCase = true) }
+    fun sortByDueDate(order: SortOrder) {
+        currentSortOrder = order
+        filteredTenants.sortByDueDate(order)
+    }
 
-    fun filterByHouseNumber(houseNumber: String): List<Tenant> =
-        tenants.value.filter { it.houseNumber == houseNumber }
+    private fun applyFiltersAndSort() {
+        filteredTenants.clear()
+        filteredTenants.addAll(_tenants.value.sortedByDueDate(currentSortOrder))
+    }
 
-    fun filterOverdueTenants(): List<Tenant> =
-        tenants.value.filter {
-            it.nextPaymentDate?.toDate()!!.before(Date())
+    private fun List<Tenant>.sortedByDueDate(order: SortOrder): List<Tenant> {
+        return when (order) {
+            SortOrder.ASCENDING -> sortedBy { it.nextPaymentDate!!.toDate() }
+            SortOrder.DESCENDING -> sortedByDescending { it.nextPaymentDate!!.toDate() }
         }
+    }
+
+    private fun SnapshotStateList<Tenant>.sortByDueDate(order: SortOrder) {
+        val sorted = this.sortedByDueDate(order)
+        this.clear()
+        this.addAll(sorted)
+    }
 }

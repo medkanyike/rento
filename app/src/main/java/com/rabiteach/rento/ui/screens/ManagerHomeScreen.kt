@@ -56,6 +56,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun ManagerHomeScreen(
     role: UserRole,
+    onTenantClick: (Tenant) -> Unit,
+    viewModel: TenantViewModel,
     onLogout: () -> Unit
 ) {
     val navItems = listOf(
@@ -65,7 +67,6 @@ fun ManagerHomeScreen(
         ManagerScreen.Collected
     )
 //    TODO:We may have to move the viewModel more up
-    val viewModel: TenantViewModel = viewModel()
     val isLandlord = role == UserRole.LANDLORD
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
@@ -109,7 +110,7 @@ fun ManagerHomeScreen(
             modifier = Modifier.padding(padding)
         ) {
             composable(ManagerScreen.Home.route) {
-                HomeScreen(role, viewModel)
+                HomeScreen(role, onTenantClick,viewModel)
             }
             composable(ManagerScreen.AddTenant.route) {
                 AddTenantScreen(viewModel){
