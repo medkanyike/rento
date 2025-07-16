@@ -66,7 +66,6 @@ fun ManagerHomeScreen(
         ManagerScreen.Complaints,
         ManagerScreen.Collected
     )
-//    TODO:We may have to move the viewModel more up
     val isLandlord = role == UserRole.LANDLORD
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
