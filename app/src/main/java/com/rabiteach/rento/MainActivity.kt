@@ -9,6 +9,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.navigation.compose.rememberNavController
+import com.google.firebase.FirebaseApp
 import com.rabiteach.rento.model.UserRole
 import com.rabiteach.rento.repository.AppPreferences
 import com.rabiteach.rento.ui.nav.AppNavGraph
@@ -25,6 +26,9 @@ class MainActivity : ComponentActivity() {
             val context = this
             var startDestination by remember { mutableStateOf(Screen.AccessCode.route) }
             var role by remember { mutableStateOf<UserRole?>(null) }
+            val onRoleUpdated: (UserRole) -> Unit = { updatedRole ->
+                role = updatedRole
+            }
 
             LaunchedEffect(Unit) {
                 if (AppPreferences.isAccessCodeStored(context)) {
@@ -38,7 +42,7 @@ class MainActivity : ComponentActivity() {
             }
 
             val navController = rememberNavController()
-            AppNavGraph(navController, startDestination, role, context)
+            AppNavGraph(navController, startDestination, role, context,onRoleUpdated)
         }
     }
 }

@@ -1,7 +1,10 @@
 package com.rabiteach.rento.repository
 
 import android.annotation.SuppressLint
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.firestore
 import com.rabiteach.rento.model.UserRole
+import kotlinx.coroutines.tasks.await
 
 
 object FirestoreRepository {

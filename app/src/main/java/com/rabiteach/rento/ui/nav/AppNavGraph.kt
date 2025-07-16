@@ -22,11 +22,13 @@ fun AppNavGraph(
     navController: NavHostController,
     startDestination: String,
     role: UserRole?,
-    context: Context
+    context: Context,
+    onRoleUpdated:(UserRole)->Unit
 ) {
     NavHost(navController, startDestination = startDestination) {
         composable(Screen.AccessCode.route) {
             AccessCodeScreen { detectedRole ->
+                onRoleUpdated(detectedRole)
                 val target = if (detectedRole == UserRole.TENANT)
                     Screen.TenantHome.route else Screen.ManagerHome.route
 

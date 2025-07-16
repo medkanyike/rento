@@ -23,6 +23,7 @@ import com.rabiteach.rento.model.UserRole
 fun ManagerHomeScreen(role: UserRole, onLogout: () -> Unit = {}) {
     val isLandlord = role == UserRole.LANDLORD
 
+
     Scaffold(
         topBar = {
             TopAppBar(title = { Text("Manager Dashboard") }, actions = {
