@@ -12,10 +12,12 @@ data class Tenant(
     val location: String = "",
     val passcode: String = "",
     val rentID: String = "",
+    val monthsPaidFor: Int = 1,
     val receipts: List<Receipt> = emptyList()
 )
 
 data class Receipt(
     val receiptID: String = "",
-    val date: Timestamp? = null
+    val date: Timestamp? = null,
+    val amountPaid:Int=1
 )

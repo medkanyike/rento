@@ -54,7 +54,6 @@ fun AppNavGraph(
 
         composable(Screen.ManagerHome.route) {
             ManagerHomeScreen(role = role ?: UserRole.ASSISTANT,
-                tenants =listOf<Tenant>(),
                 onLogout = {
                 CoroutineScope(Dispatchers.IO).launch {
                     AppPreferences.clearUserData(context)
