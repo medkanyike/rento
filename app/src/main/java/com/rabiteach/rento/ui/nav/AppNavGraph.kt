@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.rabiteach.rento.model.Tenant
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -52,7 +53,9 @@ fun AppNavGraph(
         }
 
         composable(Screen.ManagerHome.route) {
-            ManagerHomeScreen(role = role ?: UserRole.ASSISTANT, onLogout = {
+            ManagerHomeScreen(role = role ?: UserRole.ASSISTANT,
+                tenants =listOf<Tenant>(),
+                onLogout = {
                 CoroutineScope(Dispatchers.IO).launch {
                     AppPreferences.clearUserData(context)
                     withContext(Dispatchers.Main) {
