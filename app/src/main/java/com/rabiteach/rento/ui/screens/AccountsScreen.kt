@@ -13,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.rabiteach.rento.model.DateFilter
 import com.rabiteach.rento.ui.screens.manager.components.FilterSection
 import com.rabiteach.rento.ui.screens.manager.components.ReceiptList
 import com.rabiteach.rento.ui.screens.manager.components.SummarySection
@@ -44,7 +45,8 @@ fun AccountsScreen(viewModel: AccountsViewModel = hiltViewModel()) {
             locationOptions = viewModel.getAvailableLocations(), // dynamic list
             onSearchQueryChanged = viewModel::onSearchQueryChanged,
             onDateFilterChanged = viewModel::onDateFilterChanged,
-            onLocationSelected = viewModel::onLocationFilterChanged
+            onLocationSelected = viewModel::onLocationFilterChanged,
+            onFilterChange =  viewModel::updateDateFilter,
         )
 
         Spacer(modifier = Modifier.height(8.dp))

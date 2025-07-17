@@ -2,7 +2,6 @@ package com.rabiteach.rento.ui.screens.manager.components
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,7 +13,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,11 +21,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.rabiteach.rento.model.DateFilter
 import java.time.LocalDate
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FilterSection(
@@ -36,8 +34,13 @@ fun FilterSection(
     locationOptions: List<String>,
     onSearchQueryChanged: (String) -> Unit,
     onDateFilterChanged: (DateFilter) -> Unit,
-    onLocationSelected: (String?) -> Unit
+    onLocationSelected: (String?) -> Unit,
+    onFilterChange: (DateFilter, Pair<LocalDate?, LocalDate?>?) -> Unit
 ) {
+    var showDatePicker by remember { mutableStateOf(false) }
+//    var customStartDate by remember { mutableStateOf<LocalDate?>(null) }
+//    var customEndDate by remember { mutableStateOf<LocalDate?>(null) }
+
     Column {
         OutlinedTextField(
             value = searchQuery,
@@ -48,15 +51,26 @@ fun FilterSection(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
             DateFilter.entries.forEach { filter ->
                 FilterChip(
                     selected = selectedDateFilter == filter,
-                    onClick = { onDateFilterChanged(filter) },
+                    onClick = {
+                        if (filter == DateFilter.Custom) {
+                            showDatePicker = true
+                        } else {
+                            onDateFilterChanged(filter)
+                        }
+                    },
                     label = { Text(filter.name) }
                 )
             }
         }
+
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -95,4 +109,15 @@ fun FilterSection(
             }
         }
     }
+
+    if (showDatePicker) {
+        DateRangePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            onDateSelected = { start, end ->
+                onFilterChange(DateFilter.Custom, start to end)
+                showDatePicker = false
+            }
+        )
+    }
+
 }
