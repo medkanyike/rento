@@ -31,7 +31,7 @@ fun AppNavGraph(
     context: Context,
     onRoleUpdated:(UserRole)->Unit
 ) {
-    val viewModel: TenantViewModel = viewModel()
+//    val viewModel: TenantViewModel = viewModel()
 
     NavHost(navController, startDestination = startDestination) {
         composable(Screen.AccessCode.route) {
@@ -64,7 +64,7 @@ fun AppNavGraph(
                 onTenantClick = { tenant ->
                     navController.navigate(Screen.TenantDetail.createRoute(tenant.passcode)) // unique ID
                 },
-                viewModel=viewModel,
+//                viewModel=viewModel,
                 onLogout = {
                 CoroutineScope(Dispatchers.IO).launch {
                     AppPreferences.clearUserData(context)
@@ -81,7 +81,7 @@ fun AppNavGraph(
             arguments = listOf(navArgument("tenantId") { type = NavType.StringType })
         ) { backStackEntry ->
             val tenantId = backStackEntry.arguments?.getString("tenantId") ?: return@composable
-            TenantDetailScreen(viewModel, tenantId, navController)
+            TenantDetailScreen(tenantId=tenantId, navController=navController)
         }
     }
 }

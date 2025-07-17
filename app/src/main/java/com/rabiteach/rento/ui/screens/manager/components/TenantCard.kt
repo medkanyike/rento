@@ -22,10 +22,13 @@ import java.util.Date
 
 @SuppressLint("SimpleDateFormat")
 @Composable
-fun TenantCard(tenant: Tenant) {
+fun TenantCard(tenant: Tenant, onCreateReceipt: () -> Unit) {
     val dueDate = tenant.nextPaymentDate!!.toDate()
     val isOverdue = dueDate.before(Date())
     val backgroundColor = if (isOverdue) Color(0xFFFFE6E6) else Color(0xFFE6FFE6)
+
+
+
 
     Card(
         modifier = Modifier
@@ -47,8 +50,8 @@ fun TenantCard(tenant: Tenant) {
                     Text("Overdue", color = Color.Red, fontWeight = FontWeight.Bold)
                 }
             }
-            Button(onClick = { /* Collect */ }) {
-                Text("Collect")
+            Button(onClick = onCreateReceipt) {
+                Text("Create Receipt")
             }
         }
     }

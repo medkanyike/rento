@@ -19,5 +19,6 @@ data class Tenant(
 data class Receipt(
     val receiptID: String = "",
     val date: Timestamp? = null,
-    val amountPaid:Int=1
-)
+    val amountPaid:Int=1,
+    val monthsPaidFor: Int = 1,
+    )

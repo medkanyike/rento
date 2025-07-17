@@ -22,9 +22,10 @@ import com.rabiteach.rento.model.UserRole
 import com.rabiteach.rento.repository.AppPreferences
 import com.rabiteach.rento.ui.nav.AppNavGraph
 import com.rabiteach.rento.ui.nav.Screen
+import dagger.hilt.android.AndroidEntryPoint
 
 
-
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

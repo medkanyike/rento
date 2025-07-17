@@ -1,27 +1,16 @@
 package com.rabiteach.rento.ui.screens
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -36,19 +25,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.rabiteach.rento.model.Tenant
 import com.rabiteach.rento.model.UserRole
 import com.rabiteach.rento.ui.nav.ManagerScreen
-import com.rabiteach.rento.ui.nav.Screen
 import com.rabiteach.rento.ui.screens.manager.AddTenantScreen
 import com.rabiteach.rento.ui.screens.manager.CollectedScreen
 import com.rabiteach.rento.ui.screens.manager.ComplaintsScreen
 import com.rabiteach.rento.ui.screens.manager.HomeScreen
+import com.rabiteach.rento.ui.screens.manager.components.CreateReceiptForm
 import com.rabiteach.rento.viewModels.TenantViewModel
 import kotlinx.coroutines.launch
 
@@ -57,7 +45,7 @@ import kotlinx.coroutines.launch
 fun ManagerHomeScreen(
     role: UserRole,
     onTenantClick: (Tenant) -> Unit,
-    viewModel: TenantViewModel,
+    viewModel: TenantViewModel= hiltViewModel(),
     onLogout: () -> Unit
 ) {
     val navItems = listOf(
@@ -70,6 +58,10 @@ fun ManagerHomeScreen(
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
     var showBottomSheet by remember { mutableStateOf(false) }
+    val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val selectedTenant = remember { mutableStateOf<Tenant?>(null) }
+
+
 
     val navController = rememberNavController()
     Scaffold(
@@ -109,7 +101,10 @@ fun ManagerHomeScreen(
             modifier = Modifier.padding(padding)
         ) {
             composable(ManagerScreen.Home.route) {
-                HomeScreen(role, onTenantClick,viewModel)
+                HomeScreen(role, onTenantClick,viewModel, onCreateReceipt = {tenant->
+                    selectedTenant.value = tenant
+                    scope.launch { bottomSheetState.show() }
+                })
             }
             composable(ManagerScreen.AddTenant.route) {
                 AddTenantScreen(viewModel){
@@ -143,5 +138,20 @@ fun ManagerHomeScreen(
                 }
             }
         }
+
+
+        selectedTenant.value?.let { tenant ->
+            ModalBottomSheet(
+                onDismissRequest = { selectedTenant.value = null },
+                sheetState = bottomSheetState
+            ) {
+                CreateReceiptForm(tenant = tenant, onReceiptCreated = {
+                    selectedTenant.value = null
+                })
+            }
+        }
+
     }
+
+
 }

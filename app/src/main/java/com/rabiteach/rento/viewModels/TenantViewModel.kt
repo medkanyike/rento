@@ -2,15 +2,16 @@ package com.rabiteach.rento.viewModels
 
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.Firebase
 import com.google.firebase.Timestamp
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.firestore
 import com.rabiteach.rento.model.Receipt
 import com.rabiteach.rento.model.Tenant
+import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,8 +19,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.util.Calendar
 import java.util.Date
+import java.util.UUID
 
-class TenantViewModel : ViewModel() {
+class TenantViewModel  @Inject constructor(
+//    private val repository: TenantRepository // or whatever dependencies
+)  : ViewModel() {
     private val db = Firebase.firestore
     private val tenantsRef = db.collection("tenants")
 
@@ -163,4 +167,53 @@ class TenantViewModel : ViewModel() {
         this.clear()
         this.addAll(sorted)
     }
-}
+
+    fun createReceiptAndUpdateTenant(
+        tenant: Tenant,
+        amountPaid: Int,
+        monthsPaid: Int,
+        onSuccess: () -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        val db = Firebase.firestore
+        val tenantDoc = db.collection("tenants")
+            .whereEqualTo("passcode", tenant.passcode)
+
+        tenantDoc.get().addOnSuccessListener { querySnapshot ->
+            if (!querySnapshot.isEmpty) {
+                val doc = querySnapshot.documents.first()
+                val tenantRef = doc.reference
+                val currentData = doc.toObject(Tenant::class.java) ?: return@addOnSuccessListener
+
+                val newReceipt = Receipt(
+                    receiptID = UUID.randomUUID().toString(),
+                    date = Timestamp.now(),
+                    amountPaid = amountPaid,
+                    monthsPaidFor = monthsPaid
+                )
+
+                val updatedReceipts = currentData.receipts.toMutableList()
+                updatedReceipts.add(newReceipt)
+
+                val now = Timestamp.now()
+                val calendar = Calendar.getInstance()
+                calendar.time = now.toDate()
+                calendar.add(Calendar.MONTH, monthsPaid)
+
+                val newNextDate = Timestamp(calendar.time)
+
+                tenantRef.update(
+                    mapOf(
+                        "receipts" to updatedReceipts,
+                        "lastPaymentDate" to now,
+                        "nextPaymentDate" to newNextDate,
+                        "monthsPaidFor" to (currentData.monthsPaidFor + monthsPaid)
+                    )
+                ).addOnSuccessListener {
+                    onSuccess()
+                }.addOnFailureListener { it-> onFailure(it) }
+            }
+        }
+    }
+    }
+

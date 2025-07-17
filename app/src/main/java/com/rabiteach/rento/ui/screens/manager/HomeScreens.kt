@@ -38,7 +38,7 @@ import com.rabiteach.rento.viewModels.SortOrder
 import com.rabiteach.rento.viewModels.TenantViewModel
 
 @Composable
-fun HomeScreen(role: UserRole, onTenantClick: (Tenant) -> Unit, viewModel: TenantViewModel) {
+fun HomeScreen(role: UserRole, onTenantClick: (Tenant) -> Unit, viewModel: TenantViewModel, onCreateReceipt: (Tenant) -> Unit) {
 
     val searchQuery = remember { mutableStateOf("") }
     val showOverdue = remember { mutableStateOf(false) }
@@ -115,7 +115,7 @@ fun HomeScreen(role: UserRole, onTenantClick: (Tenant) -> Unit, viewModel: Tenan
                 }
                 items(groupTenants) { tenant ->
                     Box(modifier = Modifier.clickable { onTenantClick(tenant) }) {
-                        TenantCard(tenant)
+                        TenantCard(tenant,onCreateReceipt={onCreateReceipt(tenant)})
                     }
                 }
             }

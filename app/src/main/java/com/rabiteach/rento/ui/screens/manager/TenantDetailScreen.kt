@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.google.firebase.Timestamp
 import com.rabiteach.rento.viewModels.TenantViewModel
@@ -31,7 +32,8 @@ import java.util.Locale
 @SuppressLint("StateFlowValueCalledInComposition")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TenantDetailScreen(viewModel: TenantViewModel, tenantId: String, navController: NavHostController) {
+fun TenantDetailScreen( viewModel: TenantViewModel= hiltViewModel(),
+tenantId: String, navController: NavHostController) {
     val tenant = viewModel.tenants.value.find { it.passcode == tenantId }
 
     Scaffold(

@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("kotlin-kapt")
+    id("com.google.dagger.hilt.android")
     id("com.google.gms.google-services")
 }
 
@@ -40,6 +42,11 @@ android {
     }
 }
 
+
+kapt {
+    correctErrorTypes = true
+}
+
 dependencies {
 
     implementation(libs.androidx.core.ktx)
@@ -61,5 +68,10 @@ dependencies {
     implementation("androidx.datastore:datastore-preferences:1.1.7")
     implementation("androidx.navigation:navigation-compose:2.9.1")
     implementation("com.google.firebase:firebase-firestore")
+    implementation ("com.google.dagger:hilt-android:2.57")
+    kapt ("com.google.dagger:hilt-compiler:2.57")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+
 
 }
+
