@@ -1,5 +1,7 @@
 package com.rabiteach.rento.ui.screens
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
@@ -40,6 +42,7 @@ import com.rabiteach.rento.ui.screens.manager.components.CreateReceiptForm
 import com.rabiteach.rento.viewModels.TenantViewModel
 import kotlinx.coroutines.launch
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ManagerHomeScreen(
@@ -115,7 +118,7 @@ fun ManagerHomeScreen(
                 ComplaintsScreen()
             }
             composable(ManagerScreen.Collected.route) {
-                CollectedScreen()
+                AccountsScreen()
             }
         }
 

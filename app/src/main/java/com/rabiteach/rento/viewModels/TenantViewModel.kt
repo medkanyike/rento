@@ -178,6 +178,8 @@ class TenantViewModel  @Inject constructor(
         val db = Firebase.firestore
         val tenantDoc = db.collection("tenants")
             .whereEqualTo("passcode", tenant.passcode)
+        val tenantIndex = filteredTenants.indexOfFirst { it.passcode == tenant.passcode }
+        val tenant = filteredTenants[tenantIndex]
 
         tenantDoc.get().addOnSuccessListener { querySnapshot ->
             if (!querySnapshot.isEmpty) {
@@ -207,10 +209,17 @@ class TenantViewModel  @Inject constructor(
                         "receipts" to updatedReceipts,
                         "lastPaymentDate" to now,
                         "nextPaymentDate" to newNextDate,
-                        "monthsPaidFor" to (currentData.monthsPaidFor + monthsPaid)
+                        "monthsPaidFor" to  monthsPaid
                     )
                 ).addOnSuccessListener {
                     onSuccess()
+                    val updatedTenant = tenant.copy(
+                        receipts = updatedReceipts,
+                        lastPaymentDate = now,
+                        nextPaymentDate = newNextDate,
+                        monthsPaidFor =  monthsPaid
+                    )
+                    filteredTenants[tenantIndex] = updatedTenant
                 }.addOnFailureListener { it-> onFailure(it) }
             }
         }
